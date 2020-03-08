@@ -1,26 +1,43 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { Component } from 'react';
 import './App.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import MovieList from './MovieList.js';
+import Header from './Header.js';
+import Intro from './Intro.js';
+import Loading from './Loading.js';
+
+class App extends Component {
+
+    state = {}
+
+    _callMovie = () => {
+        return fetch("https://yts.mx/api/v2/list_movies.json?sort_by=rating")
+        .then(res => res.json())
+        .then(json => json.data.movies)
+        .catch(err => console.log(err))
+    }
+
+    _setMovie = async () => {
+        const movies = await this._callMovie()
+        this.setState({
+            movies
+        })
+    }
+
+    componentDidMount() {
+        this._setMovie()
+    }
+
+    render() {
+        return (
+            <div className="App">
+                <Header />
+                <Intro />
+                <div className="cont"> {this.state.movies ?   <MovieList data={this.state.movies}/>: <Loading />}</div> 
+            </div>
+        )
+    }
 }
 
 export default App;
